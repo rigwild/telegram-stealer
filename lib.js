@@ -109,6 +109,12 @@ function deleteArchive(archivePath) {
   })
 }
 
+/**
+ * @param {string} telegramChatId
+ * @param {string} telegramToken
+ * @param {string} archivePassword
+ * @param {boolean} waitOnStart
+ */
 async function run(
   telegramChatId,
   telegramToken,

