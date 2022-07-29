@@ -67,6 +67,11 @@ type StealTelegram = (
 await stealTelegram('<chat_id>', '<bot_token>', '<archivePassword>', false)
 ```
 
+## Related projects
+
+- [Waifu Stealer](https://github.com/rigwild/waifu-stealer) - Stealer builder (Browsers, Discord, Telegram, ...)
+- [Discord Stealer](https://github.com/rigwild/discord-stealer) - Steal Discord tokens from clients and browsers
+
 ## License
 
 [The MIT license](./LICENSE)

