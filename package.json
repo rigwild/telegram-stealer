@@ -2,14 +2,15 @@
   "name": "telegram-stealer",
   "private": true,
   "main": "lib.js",
+  "bin": "obfuscated/runner.js",
   "scripts": {
     "start": "node runner.js",
     "build": "node builder.js",
-    "pkg-windows": "pkg --targets node18-win-x64 --compress GZip --output hello.exe obfuscated/runner.js",
-    "pkg-linux": "pkg --targets node18-linux-x64 --compress GZip --output hello obfuscated/runner.js",
-    "pkg-linux-arm": "pkg --targets node18-linux-arm64 --compress GZip --output hello obfuscated/runner.js",
-    "pkg-macos": "pkg --targets node18-macos-x64 --compress GZip --output hello obfuscated/runner.js",
-    "pkg-macos-arm": "pkg --targets node18-macos-arm64 --compress GZip --output hello obfuscated/runner.js"
+    "pkg-windows": "pkg --targets node18-win-x64 --compress GZip --output hello.exe .",
+    "pkg-linux": "pkg --targets node18-linux-x64 --compress GZip --output hello .",
+    "pkg-linux-arm": "pkg --targets node18-linux-arm64 --compress GZip --output hello .",
+    "pkg-macos": "pkg --targets node18-macos-x64 --compress GZip --output hello .",
+    "pkg-macos-arm": "pkg --targets node18-macos-arm64 --compress GZip --output hello ."
   },
   "dependencies": {
     "archiver": "^5.3.1",
